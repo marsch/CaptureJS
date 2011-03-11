@@ -1,0 +1,6 @@
+{
+	"name" : "fixgen",
+	"version": "0.0.1",
+	"directories" : { "lib" : "./lib/fixgen" },
+	"main" : "./lib/fixgen/index"
+}
