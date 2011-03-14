@@ -65,7 +65,7 @@ suite1.addBatch({
 		},
 		'AND the readFile-method is called': {
 			topic: function (test) {
-				this.NAME_OF_DEVICE = "test/simple/test.pcap";
+				this.FILEPATH = "test/simple/test.pcap";
 				this.FILTER = "tcp";
  
 				this.SPY_PCAP_CREATEOFFLINESESSION = sinon.spy(pcap, "createOfflineSession"); 
@@ -82,21 +82,21 @@ suite1.addBatch({
 				this.SPY_ON_HTTP_RESPONSE_BODY = sinon.spy(test, "onHttpResponseBody");
 				this.SPY_ON_HTTP_RESPONSE_COMPLETE = sinon.spy(test, "onHttpResponseComplete");
 
-				test.readFile(this.NAME_OF_DEVICE, this.FILTER);
+				test.readFile(this.FILEPATH, this.FILTER);
 
 				
 				//send some contents
 				var sess = test.getPcapSession(); 
 				this.ORIGIN_READWATCHER_CALLBACK = sess.readWatcher.callback;  
 				var me = this;
-				sess.readWatcher.callback = function (a, b) { 
+				sess.readWatcher.callback = function (a, b) {  
 					me.ORIGIN_READWATCHER_CALLBACK.apply(arguments);
 					me.callback(null, me.SUT);
 				};
 			},
 			'THEN the Pcap-Session is created by called CreateOfflineSession': function (topic) {
 				assert.ok(this.SPY_PCAP_CREATEOFFLINESESSION.called, "createOfflineSession method is called");
-				assert.ok(this.SPY_PCAP_CREATEOFFLINESESSION.calledWith(this.NAME_OF_DEVICE, this.FILTER), "createOfflineSession is called with the right params");
+				assert.ok(this.SPY_PCAP_CREATEOFFLINESESSION.calledWith(this.FILEPATH, this.FILTER), "createOfflineSession is called with the right params");
 			},
 			'THEN the getDeviceName-Method SHOULD exist AND return a String': function (topic) {
 				assert.ok((helper.isType(this.SUT.getDeviceName, "Function")), "exists");
@@ -175,8 +175,8 @@ suite1.addBatch({
 				},
 				teardown: function (topic) {
 					//remove the test file
-				//	var fs = require('fs');
-					//fs.unlinkSync('/tmp/testfile.json');
+					var fs = require('fs');
+					fs.unlinkSync('/tmp/testfile.json');
 				}
 			},
 			teardown: function(test) {
@@ -186,6 +186,14 @@ suite1.addBatch({
 				this.SPY_PCAP_DECODE_PACKET.restore(); 
 				this.SPY_TCP_TRACKER_ON.restore(); 
 				this.SPY_TCP_TRACKER_TRACKPACKET.restore(); 
+				
+				this.SPY_ON_HTTP_REQUEST.restore(); 
+				this.SPY_ON_HTTP_REQUEST_BODY.restore(); 
+				this.SPY_ON_HTTP_REQUEST_COMPLETE.restore(); 
+				this.SPY_ON_HTTP_RESPONSE.restore(); 
+				this.SPY_ON_HTTP_RESPONSE_BODY.restore(); 
+				this.SPY_ON_HTTP_RESPONSE_COMPLETE.restore(); 
+				
 				var sess = test.getPcapSession(); 
 				sess.readWatcher.callback = this.ORIGIN_READWATCHER_CALLBACK; 
 			//	test.stop();
