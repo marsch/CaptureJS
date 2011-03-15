@@ -9,13 +9,14 @@ suite1.addBatch({
 		topic: function () {
 			var me = this;
 			me.TEST_OUTPUTFILE = "./testoutput.json";
-			me.TEST_COMMAND = "node ./lib/fixgen/fixgen.js --readfile ./test/simple/fixtures/test.pcap --outputfile "+me.TEST_OUTPUTFILE;
+			me.TEST_COMMAND = "./fixgen --outputfile "+me.TEST_OUTPUTFILE+" readfile ./test/simple/fixtures/test.pcap";
 			child_process.exec(this.TEST_COMMAND, function (err, stdout, stderr) {
 				if (err) {
 					throw err;
 				}
-				me.callback(null, stdout);
-			})
+				//me.callback(null, stdout);
+			});
+			return true;
 		},
 		'AND the generated Outputfile is opened and read': {
 			topic: function (topic) { 

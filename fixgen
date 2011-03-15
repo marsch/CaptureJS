@@ -8,7 +8,7 @@ var cli = require('cli'),
 	cli.parse({
 		outputfile: ['o', 'Output filepath', 'STRING'],
 	    "filter-method":    ['M', 'Filter by Http-Method', "STRING"],
-		"filter-user-agent": ['U', 'Filter by User-Agent', 'STRING']
+		"filter-user-agent": ['U', 'Filter by User-Agent', 'STRING'],
 		"filter-hostname": ['H', 'Filter by Hostname', 'STRING'],
 		"filter-content-type": ['C', 'Filter Response Content Type', 'STRING'],
 		"filter-url": ['U', 'Filter by URL', 'URL'],
