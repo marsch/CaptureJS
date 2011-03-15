@@ -15,10 +15,9 @@ var cli = require('cli'),
 		
 	},['capture','readpcap']);
 
-cli.main(function (args, options) {
-	console.log(arguments);
+cli.main(function (args, options) { 
 	var fixoptions = {
-			outputfile: options.outputfile,
+			outputfile: options.outputfile || false,
 			filter_method: options["filter-method"] || false,
 			filter_hostname: options["filter-hostname"] || false,
 			filter_url: options["filter-url"] || false,
@@ -28,15 +27,13 @@ cli.main(function (args, options) {
 		fixgenerator = fixgen(fixoptions);
 
 	switch(cli.command) {
-	case 'capture':
-		console.log("capture");	
+	case 'capture': 
 		fixgenerator.start(args[0]);
 		fixgenerator.on('end', function () {
 			console.log(fixgenerator.getFlow());
 		});
 		break;
-	case 'readpcap':
-		console.log("read pcap"); 
+	case 'readpcap': 
 		fixgenerator.readFile(args[0]);
 		fixgenerator.on('end', function () {
 			console.log(fixgenerator.getFlow());
