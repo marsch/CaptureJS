@@ -1,0 +1,46 @@
+#!/usr/bin/env node
+	
+require.paths.unshift('./lib');
+
+var cli = require('cli'),
+	fixgen = require('fixgen');
+	
+	cli.parse({
+		outputfile: ['o', 'Output filepath', 'STRING'],
+	    "filter-method":    ['M', 'Filter by Http-Method', "STRING"],
+		"filter-user-agent": ['U', 'Filter by User-Agent', 'STRING']
+		"filter-hostname": ['H', 'Filter by Hostname', 'STRING'],
+		"filter-content-type": ['C', 'Filter Response Content Type', 'STRING'],
+		"filter-url": ['U', 'Filter by URL', 'URL'],
+		
+	},['capture','readpcap']);
+
+cli.main(function (args, options) {
+	console.log(arguments);
+	var fixoptions = {
+			outputfile: options.outputfile,
+			filter_method: options["filter-method"] || false,
+			filter_hostname: options["filter-hostname"] || false,
+			filter_url: options["filter-url"] || false,
+			filter_user_agent: options["filter-user-agent"] || false,
+			filter_content_type: options["filter-content-type"] || false
+		},
+		fixgenerator = fixgen(fixoptions);
+
+	switch(cli.command) {
+	case 'capture':
+		console.log("capture");	
+		fixgenerator.start(args[0]);
+		fixgenerator.on('end', function () {
+			console.log(fixgenerator.getFlow());
+		});
+		break;
+	case 'readpcap':
+		console.log("read pcap"); 
+		fixgenerator.readFile(args[0]);
+		fixgenerator.on('end', function () {
+			console.log(fixgenerator.getFlow());
+		}); 
+		break;
+	}
+});

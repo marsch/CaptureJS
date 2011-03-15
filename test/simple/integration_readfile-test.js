@@ -54,7 +54,8 @@ suite1 = vows.describe('Read PCap Files');
 suite1.addBatch({
 	'GIVEN a "fixgen" - constructor is called': {
 		topic: function () {
-			this.SUT = fixgen();
+			this.TEST_OUTPUTFILE = "/tmp/testfile.json";
+			this.SUT = fixgen({outputfile: this.TEST_OUTPUTFILE });
 			return this.SUT;
 		},
 		'THEN it returns a value': function(topic) {
@@ -65,7 +66,7 @@ suite1.addBatch({
 		},
 		'AND the readFile-method is called': {
 			topic: function (test) {
-				this.FILEPATH = "test/simple/test.pcap";
+				this.FILEPATH = "test/simple/fixtures/test.pcap";
 				this.FILTER = "tcp";
  
 				this.SPY_PCAP_CREATEOFFLINESESSION = sinon.spy(pcap, "createOfflineSession"); 
@@ -81,14 +82,14 @@ suite1.addBatch({
 				this.SPY_ON_HTTP_RESPONSE = sinon.spy(test, "onHttpResponse");
 				this.SPY_ON_HTTP_RESPONSE_BODY = sinon.spy(test, "onHttpResponseBody");
 				this.SPY_ON_HTTP_RESPONSE_COMPLETE = sinon.spy(test, "onHttpResponseComplete");
-
-				test.readFile(this.FILEPATH, this.FILTER);
-
 				
-				//send some contents
+				var me = this;
+				test.readFile(this.FILEPATH, this.FILTER);
+				
+				
+				//send some contents - may be this works also with the end event
 				var sess = test.getPcapSession(); 
 				this.ORIGIN_READWATCHER_CALLBACK = sess.readWatcher.callback;  
-				var me = this;
 				sess.readWatcher.callback = function (a, b) {  
 					me.ORIGIN_READWATCHER_CALLBACK.apply(arguments);
 					me.callback(null, me.SUT);
@@ -156,27 +157,22 @@ suite1.addBatch({
 					this.SPY_PCAP_CLOSE.restore();
 				}
 			},
-			'AND the store Method is called with a filename-parameter': {
+			'AND the Contents of the Flow are stored implicity AND the outputfile is read': {
 				topic: function (topic) {
-					topic.save("/tmp/testfile.json", this.callback);
+					var outer = this;
+					fs.readFile(this.TEST_OUTPUTFILE, function (err, data) {
+						if (err) throw err;
+						outer.callback(null, JSON.parse(data.toString("utf8")));
+					});
+						
 				},
-				'AND WHEN THE CONTENTS ARE READ': {
-					topic: function (topic) {
-						var outer = this;
-						fs.readFile('/tmp/testfile.json', function (err, data) {
-							if (err) throw err;
-							outer.callback(null, JSON.parse(data.toString("utf8")));
-						});
-							
-					},
-					'THEN the file contents should be the same as expected': function (topic) {
-						assert.deepEqual(this.SUT.getFlow(),topic);
-					}
+				'THEN the file contents should be the same as expected': function (topic) {
+					assert.deepEqual(this.SUT.getFlow(),topic);
 				},
 				teardown: function (topic) {
 					//remove the test file
 					var fs = require('fs');
-					fs.unlinkSync('/tmp/testfile.json');
+					fs.unlinkSync(this.TEST_OUTPUTFILE);
 				}
 			},
 			teardown: function(test) {
