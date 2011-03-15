@@ -83,6 +83,21 @@ suite1.addBatch({
 				}
 			}
 		}
+	},
+	'GIVEN the fixgen class is instantiated': {
+		topic: function() {
+			this.FIXGEN = fixgen();
+			return this.FIXGEN;
+		},
+		'AND the gzipDecode-method is called': {
+			topic: function (topic) {
+				var toDecodeGZIP = "\u001f�\b\u0000\u0000\u0000\u0000\u0000\u0000\u0003�VJI,IT�R2T�\u0005\u0000��Sa\f\u0000\u0000\u0000";
+				return topic.gzipDecode(toDecodeGZIP, this.callback);
+			},
+			'THEN the resulting String should be decoded correctly': function (topic) {
+				assert.equal(topic, "blabla");
+			}
+		}
 	}
 });
 
