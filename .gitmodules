@@ -1,9 +1,0 @@
-[submodule "deps/sinon"]
-	path = deps/sinon
-	url = https://github.com/cjohansen/Sinon.JS.git
-[submodule "deps/nodeunit"]
-	path = deps/nodeunit
-	url = git://github.com/caolan/nodeunit.git
-[submodule "deps/node-gzip"]
-	path = deps/node-gzip
-	url = git@git.sourcegarden.com:evergreenjs/node-gzip.git
